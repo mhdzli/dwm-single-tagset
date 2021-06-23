@@ -15,6 +15,7 @@ A new method attachclients was added. When changing between tags this function e
 Authors
 Jan Christoph Ebersbach - jceb@e-jc.de
 Mohammad Zeinali - mzeinali@tutanota.com
+Bruno Cooper - BrunoCooper17@outlook.com
 
 ---
  dwm.c | 226 ++++++++++++++++++++++++++++++++++++++++++++--------------
