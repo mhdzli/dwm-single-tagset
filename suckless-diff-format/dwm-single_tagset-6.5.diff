@@ -1,14 +1,14 @@
-From ccc8c267279865f357625bb0e8a89f722bfd647a Mon Sep 17 00:00:00 2001
+From 183d29f78e863baedcbd759e5b17750e560394e2 Mon Sep 17 00:00:00 2001
 From: Mohammad Zeinali <mzeinali@tutanota.com>
-Date: Thu, 26 Sep 2024 15:37:28 +0330
+Date: Sat, 1 Feb 2025 01:11:39 +0330
 Subject: [PATCH] single tagset for dwm 6.5
 
 ---
- dwm.c | 225 ++++++++++++++++++++++++++++++++++++++++++++--------------
- 1 file changed, 171 insertions(+), 54 deletions(-)
+ dwm.c | 215 +++++++++++++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 161 insertions(+), 54 deletions(-)
 
 diff --git a/dwm.c b/dwm.c
-index f1d86b2..1079c5a 100644
+index f1d86b2..afaa0ff 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -49,7 +49,7 @@
@@ -408,7 +408,7 @@ index f1d86b2..1079c5a 100644
  		selmon->sel->tags = newtags;
  		focus(NULL);
  		arrange(selmon);
-@@ -1753,12 +1837,27 @@ toggletag(const Arg *arg)
+@@ -1753,12 +1837,17 @@ toggletag(const Arg *arg)
  void
  toggleview(const Arg *arg)
  {
@@ -421,23 +421,13 @@ index f1d86b2..1079c5a 100644
 +			if(m != selmon && newtagset & m->tagset[m->seltags])
 +				return;
  		selmon->tagset[selmon->seltags] = newtagset;
--		focus(NULL);
+ 		focus(NULL);
+-		arrange(selmon);
 +		attachclients(selmon);
- 		arrange(selmon);
-+		focus(NULL);
-+
-+		unsigned int newtagset = selmon->tagset[selmon->seltags] ^ (arg->ui & TAGMASK);
-+
-+		if (newtagset) {
-+			selmon->tagset[selmon->seltags] = newtagset;
-+			attachclients(selmon);
-+			arrange(selmon);
-+			focus(NULL);
-+		}
  	}
  }
  
-@@ -1858,7 +1957,7 @@ updateclientlist()
+@@ -1858,7 +1947,7 @@ updateclientlist()
  
  	XDeleteProperty(dpy, root, netatom[NetClientList]);
  	for (m = mons; m; m = m->next)
@@ -446,7 +436,7 @@ index f1d86b2..1079c5a 100644
  			XChangeProperty(dpy, root, netatom[NetClientList],
  				XA_WINDOW, 32, PropModeAppend,
  				(unsigned char *) &(c->win), 1);
-@@ -1889,8 +1988,10 @@ updategeom(void)
+@@ -1889,8 +1978,10 @@ updategeom(void)
  		/* new monitors if nn > n */
  		for (i = n; i < nn; i++) {
  			for (m = mons; m && m->next; m = m->next);
@@ -458,7 +448,7 @@ index f1d86b2..1079c5a 100644
  			else
  				mons = createmon();
  		}
-@@ -1910,16 +2011,13 @@ updategeom(void)
+@@ -1910,16 +2001,13 @@ updategeom(void)
  		/* removed monitors if n > nn */
  		for (i = nn; i < n; i++) {
  			for (m = mons; m && m->next; m = m->next);
@@ -480,7 +470,7 @@ index f1d86b2..1079c5a 100644
  			cleanupmon(m);
  		}
  		free(unique);
-@@ -2053,13 +2151,32 @@ updatewmhints(Client *c)
+@@ -2053,13 +2141,32 @@ updatewmhints(Client *c)
  void
  view(const Arg *arg)
  {
@@ -514,7 +504,7 @@ index f1d86b2..1079c5a 100644
  }
  
  Client *
-@@ -2069,7 +2186,7 @@ wintoclient(Window w)
+@@ -2069,7 +2176,7 @@ wintoclient(Window w)
  	Monitor *m;
  
  	for (m = mons; m; m = m->next)
@@ -523,7 +513,7 @@ index f1d86b2..1079c5a 100644
  			if (c->win == w)
  				return c;
  	return NULL;
-@@ -2135,7 +2252,7 @@ zoom(const Arg *arg)
+@@ -2135,7 +2242,7 @@ zoom(const Arg *arg)
  
  	if (!selmon->lt[selmon->sellt]->arrange || !c || c->isfloating)
  		return;
@@ -533,5 +523,5 @@ index f1d86b2..1079c5a 100644
  	pop(c);
  }
 -- 
-2.46.2
+2.48.1
 
